@@ -1,0 +1,17 @@
+# Disable directory listing
+Options -Indexes
+
+# Redirect forbidden access to a custom page (optional)
+ErrorDocument 403 /403.html
+
+# Protect .htaccess itself from being viewed
+<Files .htaccess>
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Protect sensitive files (optional)
+<FilesMatch "\.(env|ini|log|txt)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>

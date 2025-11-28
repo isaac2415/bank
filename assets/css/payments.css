@@ -1,0 +1,54 @@
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+.status-pending {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-paid {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-missed {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.btn-small {
+    padding: 4px 8px;
+    font-size: 0.9em;
+    margin-right: 5px;
+}
+
+.table-container {
+    overflow-x: auto;
+    margin: 20px 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.amount-collected {
+    float: right;
+    font-weight: 500;
+    color: #28a745;
+}
