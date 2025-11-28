@@ -187,7 +187,7 @@ $announcements = $stmt->fetchAll();
             </div>
             <?php endif; ?>
         </div>
-
+        
         <!-- Quick Actions -->
         <div class="quick-actions">
             <a href="groups.php" class="action-card">
