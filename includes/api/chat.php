@@ -1,6 +1,6 @@
 <?php
-require_once '../config/database.php';
-require_once '../includes/auth.php';
+require_once '../../config/database.php';
+require_once '../../includes/auth.php';
 
 header('Content-Type: application/json');
 
@@ -109,7 +109,7 @@ function createAnnouncement($db) {
     $user_id = $_SESSION['user_id'];
 
     // Verify user is member of the group
-    $query = "SELECT id FROM `group_members` WHERE group_id = ? AND user_id = ? AND status = 'active'";
+    $query = "SELECT `id` FROM `group_members` WHERE `group_id` = ? AND `user_id` = ? AND `status` = 'active'";
     $stmt = $db->prepare($query);
     $stmt->execute([$group_id, $user_id]);
 
@@ -119,7 +119,7 @@ function createAnnouncement($db) {
     }
 
     try {
-        $query = "INSERT INTO `announcements` (group_id, user_id, title, content) VALUES (?, ?, ?, ?)";
+        $query = "INSERT INTO `announcements` (`group_id`, `user_id`, `title`, `content`) VALUES (?, ?, ?, ?)";
         $stmt = $db->prepare($query);
 
         if ($stmt->execute([$group_id, $user_id, $title, $content])) {
@@ -129,7 +129,7 @@ function createAnnouncement($db) {
         }
     } catch (Exception $e) {
         error_log("Error creating announcement: " . $e->getMessage());
-        echo json_encode(['success' => false, 'message' => 'An error occurred. Please try again']);
+        echo json_encode(['success' => false, 'message' => 'An error occurred. Please try againe']);
     }
 }
 ?>

@@ -76,7 +76,7 @@ function createAnnouncement($db) {
         $_SESSION['success'] = "Announcement posted successfully";
     } catch (Exception $e) {
         error_log("Error creating announcement: " . $e->getMessage());
-        $_SESSION['error'] = "An error occurred. Please try again";
+        $_SESSION['error'] = "An error occurred. Please try again.";
     }
 }
 ?>
@@ -160,6 +160,25 @@ function createAnnouncement($db) {
         padding: 1rem;
         margin-bottom: 1rem;
     }
+
+    .form-message {
+        padding: 0.75rem;
+        border-radius: 5px;
+        margin-bottom: 1rem;
+        display: none;
+    }
+    
+    .form-message.success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+    
+    .form-message.error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
     </style>
 </head>
 <body>
@@ -204,7 +223,8 @@ function createAnnouncement($db) {
                 <!-- Create Announcement -->
                 <div class="card">
                     <h3>Create Announcement</h3>
-                    <form class="ajax-form" data-reset="true">
+                    <div id="announcementMessage" class="form-message"></div>
+                    <form id="announcementForm" class="ajax-form" data-reset="true">
                         <input type="hidden" name="action" value="create_announcement">
                         <input type="hidden" name="group_id" value="<?php echo $group_id; ?>">
                         
@@ -251,8 +271,9 @@ function createAnnouncement($db) {
         </div>
     </main>
 
-    <script src="../assets/js/app.js"></script>
     <script>
+    // ... (keep all your existing JavaScript functions for chat)
+
     let chatPolling;
     let lastMessageId = 0;
     let isAtBottom = true;
@@ -261,7 +282,7 @@ function createAnnouncement($db) {
         const container = document.getElementById('chatMessages');
         const wasAtBottom = container.scrollTop + container.clientHeight >= container.scrollHeight - 10;
 
-        fetch(`../api/chat.php?action=get_messages&group_id=<?php echo $group_id; ?>&last_id=${lastMessageId}`)
+        fetch(`../includes/api/chat.php?action=get_messages&group_id=<?php echo $group_id; ?>&last_id=${lastMessageId}`)
             .then(response => response.json())
             .then(data => {
                 if (data.success && data.messages.length > 0) {
@@ -298,7 +319,7 @@ function createAnnouncement($db) {
         formData.append('group_id', <?php echo $group_id; ?>);
         formData.append('message', message);
 
-        fetch('../api/chat.php', {
+        fetch('../includes/api/chat.php', {
             method: 'POST',
             body: formData
         })
@@ -332,6 +353,32 @@ function createAnnouncement($db) {
         if (e.key === 'Enter') {
             sendMessage();
         }
+    });
+
+    // Handle announcement form submission
+    document.getElementById('announcementForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const messageDiv = document.getElementById('announcementMessage');
+        
+        fetch('chat.php?group_id=<?php echo $group_id; ?>', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.redirected) {
+                window.location.href = response.url;
+            } else {
+                return response.text();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            messageDiv.textContent = 'An error occurred. Please try again.';
+            messageDiv.className = 'form-message error';
+            messageDiv.style.display = 'block';
+        });
     });
     
     // Start polling for new messages
