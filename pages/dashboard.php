@@ -207,7 +207,7 @@ $announcements = $stmt->fetchAll();
                 <p>Start a new banking group</p>
             </a>
             <?php endif; ?>
-            
+            <?php if ($role !== 'treasurer'): ?>
             <a href="groups.php?action=join" class="action-card">
                 <div class="action-icon">
                     <span class="material-icons">link</span>
@@ -215,6 +215,7 @@ $announcements = $stmt->fetchAll();
                 <h3>Join Group</h3>
                 <p>Join with a group code</p>
             </a>
+            <?php endif; ?>
             
             <a href="loans.php" class="action-card">
                 <div class="action-icon">

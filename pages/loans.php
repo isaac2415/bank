@@ -113,6 +113,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Loans - BankingKhonde</title>
     <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        .card{
+            gap: "5px";
+            
+        }
+    </style>
 </head>
 <body>
     <?php include '../includes/header.php'; ?>

@@ -32,7 +32,8 @@
             position: sticky;
             top: 0;
             z-index: 1000;
-            box-shadow: var(--shadow-soft);
+            border-bottom: solid 1px blue;
+            margin-bottom: 2rem;
         }
 
         nav {
