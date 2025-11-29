@@ -340,6 +340,7 @@ function shareProfits($db)
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Group Management - BankingKhonde</title>
     <link rel="stylesheet" href="../assets/css/style.css">
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 
 <body>
@@ -645,59 +646,66 @@ function shareProfits($db)
                     </div>
 
                     <!-- Profit Sharing Report -->
-                    <?php if (isset($_GET['show_report']) && isset($_SESSION['profit_sharing_report']) && $_SESSION['profit_sharing_report']['group_id'] == $group_id): ?>
-                        <div class="card" style="margin-top: 1.5rem; border: 2px solid #28a745;">
-                            <h3 style="color: #28a745;">🎉 Profit Sharing Report -
-                                <?php echo htmlspecialchars($_SESSION['profit_sharing_report']['group_name']); ?></h3>
-                            <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
-                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                                    <div><strong>Total Money Shared:</strong> K
-                                        <?php echo number_format($_SESSION['profit_sharing_report']['total_money'], 2); ?></div>
-                                    <div><strong>Members:</strong> <?php echo count($_SESSION['profit_sharing_report']['members']); ?>
-                                    </div>
-                                    <div><strong>Shared At:</strong>
-                                        <?php echo date('M j, Y g:i A', strtotime($_SESSION['profit_sharing_report']['shared_at'])); ?>
-                                    </div>
-                                </div>
-                            </div>
+<!-- Profit Sharing Report -->
+<?php if (isset($_GET['show_report']) && isset($_SESSION['profit_sharing_report']) && $_SESSION['profit_sharing_report']['group_id'] == $group_id): ?>
+    <div class="card" style="margin-top: 1.5rem; border: 2px solid #28a745;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="color: #28a745;">🎉 Profit Sharing Report -
+                <?php echo htmlspecialchars($_SESSION['profit_sharing_report']['group_name']); ?></h3>
+            <button onclick="generatePDFReport()" class="btn btn-primary">
+                📄 Create PDF Report
+            </button>
+        </div>
+        
+        <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <div><strong>Total Money Shared:</strong> K
+                    <?php echo number_format($_SESSION['profit_sharing_report']['total_money'], 2); ?></div>
+                <div><strong>Members:</strong> <?php echo count($_SESSION['profit_sharing_report']['members']); ?>
+                </div>
+                <div><strong>Shared At:</strong>
+                    <?php echo date('M j, Y g:i A', strtotime($_SESSION['profit_sharing_report']['shared_at'])); ?>
+                </div>
+            </div>
+        </div>
 
-                            <div class="table-container">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Member</th>
-                                            <th>Total Contributed</th>
-                                            <th>Contribution %</th>
-                                            <th>Share Amount</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php foreach ($_SESSION['profit_sharing_report']['members'] as $member): ?>
-                                            <tr>
-                                                <td>
-                                                    <strong><?php echo htmlspecialchars($member['full_name']); ?></strong>
-                                                    <div style="font-size: 0.875rem; color: #666;">
-                                                        @<?php echo htmlspecialchars($member['username']); ?></div>
-                                                </td>
-                                                <td>K <?php echo number_format($member['total_contributed'], 2); ?></td>
-                                                <td><?php echo number_format($member['contribution_percentage'], 2); ?>%</td>
-                                                <td style="font-weight: bold; color: #28a745;">K
-                                                    <?php echo number_format($member['share_amount'], 2); ?></td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
-                                </table>
-                            </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Member</th>
+                        <th>Total Contributed</th>
+                        <th>Contribution %</th>
+                        <th>Share Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($_SESSION['profit_sharing_report']['members'] as $member): ?>
+                        <tr>
+                            <td>
+                                <strong><?php echo htmlspecialchars($member['full_name']); ?></strong>
+                                <div style="font-size: 0.875rem; color: #666;">
+                                    @<?php echo htmlspecialchars($member['username']); ?></div>
+                            </td>
+                            <td>K <?php echo number_format($member['total_contributed'], 2); ?></td>
+                            <td><?php echo number_format($member['contribution_percentage'], 2); ?>%</td>
+                            <td style="font-weight: bold; color: #28a745;">K
+                                <?php echo number_format($member['share_amount'], 2); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
 
-                            <div
-                                style="margin-top: 1rem; padding: 1rem; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px;">
-                                <strong>Note:</strong> All contributions have been marked as shared and the group funds have been reset
-                                to zero. The group can now continue with new contributions.
-                            </div>
+        <div
+            style="margin-top: 1rem; padding: 1rem; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px;">
+            <strong>Note:</strong> All contributions have been marked as shared and the group funds have been reset
+            to zero. The group can now continue with new contributions.
+        </div>
 
-                            <?php unset($_SESSION['profit_sharing_report']); // Clear the report after displaying ?>
-                        </div>
-                    <?php endif; ?>
+        <!-- DON'T unset the session here - wait until after PDF generation -->
+    </div>
+<?php endif; ?>
 
                 <?php } else {
                     // Get user's groups
@@ -775,6 +783,156 @@ function shareProfits($db)
     </main>
 
     <script src="../assets/js/app.js"></script>
+    
+<script>
+    function generatePDFReport() {
+        // Initialize jsPDF
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // Get report data from PHP session - store in variables first
+        const groupName = "<?php echo addslashes($_SESSION['profit_sharing_report']['group_name'] ?? 'Group'); ?>";
+        const totalMoney = "<?php echo number_format($_SESSION['profit_sharing_report']['total_money'] ?? 0, 2); ?>";
+        const sharedAt = "<?php echo date('M j, Y g:i A', strtotime($_SESSION['profit_sharing_report']['shared_at'] ?? 'now')); ?>";
+        const memberCount = <?php echo count($_SESSION['profit_sharing_report']['members'] ?? []); ?>;
+        
+        console.log('PDF Generation Data:', {
+            groupName,
+            totalMoney,
+            sharedAt,
+            memberCount
+        });
+        
+        // Set document properties
+        doc.setProperties({
+            title: `Profit Sharing Report - ${groupName}`,
+            subject: 'Group Profit Distribution',
+            author: 'BankingKhonde System',
+            creator: 'BankingKhonde'
+        });
+        
+        // Add header
+        doc.setFontSize(20);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(40, 167, 69); // Green color
+        doc.text("PROFIT SHARING REPORT", 105, 20, { align: "center" });
+        
+        // Add group name
+        doc.setFontSize(16);
+        doc.setTextColor(0, 0, 0); // Black color
+        doc.text(`Group: ${groupName}`, 105, 30, { align: "center" });
+        
+        // Add report details
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        
+        let yPosition = 45;
+        
+        // Summary section
+        doc.setFont("helvetica", "bold");
+        doc.text("SUMMARY", 14, yPosition);
+        yPosition += 8;
+        
+        doc.setFont("helvetica", "normal");
+        doc.text(`Total Money Shared: K ${totalMoney}`, 20, yPosition);
+        yPosition += 7;
+        doc.text(`Number of Members: ${memberCount}`, 20, yPosition);
+        yPosition += 7;
+        doc.text(`Distribution Date: ${sharedAt}`, 20, yPosition);
+        yPosition += 15;
+        
+        // Add table header
+        doc.setFont("helvetica", "bold");
+        doc.text("Member Name", 14, yPosition);
+        doc.text("Username", 70, yPosition);
+        doc.text("Contributed", 110, yPosition);
+        doc.text("Percentage", 145, yPosition);
+        doc.text("Share Amount", 175, yPosition);
+        
+        yPosition += 8;
+        
+        // Draw line under header
+        doc.setDrawColor(0);
+        doc.setLineWidth(0.5);
+        doc.line(14, yPosition - 2, 196, yPosition - 2);
+        
+        yPosition += 5;
+        
+        // Add member data
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        
+        <?php if (isset($_SESSION['profit_sharing_report']['members']) && !empty($_SESSION['profit_sharing_report']['members'])): ?>
+            <?php foreach ($_SESSION['profit_sharing_report']['members'] as $index => $member): ?>
+                // Check if we need a new page
+                if (yPosition > 270) {
+                    doc.addPage();
+                    yPosition = 20;
+                    
+                    // Add table header on new page
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(12);
+                    doc.text("Member Name", 14, yPosition);
+                    doc.text("Username", 70, yPosition);
+                    doc.text("Contributed", 110, yPosition);
+                    doc.text("Percentage", 145, yPosition);
+                    doc.text("Share Amount", 175, yPosition);
+                    yPosition += 15;
+                    doc.setFont("helvetica", "normal");
+                    doc.setFontSize(10);
+                }
+                
+                doc.text("<?php echo addslashes($member['full_name']); ?>", 14, yPosition);
+                doc.text("@<?php echo addslashes($member['username']); ?>", 70, yPosition);
+                doc.text("K <?php echo number_format($member['total_contributed'], 2); ?>", 110, yPosition);
+                doc.text("<?php echo number_format($member['contribution_percentage'], 2); ?>%", 145, yPosition);
+                doc.setTextColor(40, 167, 69); // Green for share amount
+                doc.text("K <?php echo number_format($member['share_amount'], 2); ?>", 175, yPosition);
+                doc.setTextColor(0, 0, 0); // Reset to black
+                
+                yPosition += 8;
+                
+                // Add subtle line between rows
+                if (<?php echo $index; ?> < <?php echo count($_SESSION['profit_sharing_report']['members']) - 1; ?>) {
+                    doc.setDrawColor(200, 200, 200);
+                    doc.setLineWidth(0.1);
+                    doc.line(14, yPosition - 2, 196, yPosition - 2);
+                    yPosition += 3;
+                }
+            <?php endforeach; ?>
+        <?php else: ?>
+            doc.text("No member data available", 14, yPosition);
+        <?php endif; ?>
+        
+        // Add footer
+        const pageCount = doc.internal.getNumberOfPages();
+        for (let i = 1; i <= pageCount; i++) {
+            doc.setPage(i);
+            doc.setFontSize(8);
+            doc.setTextColor(128, 128, 128);
+            doc.text(`Page ${i} of ${pageCount}`, 105, 285, { align: "center" });
+            doc.text(`Generated on ${new Date().toLocaleDateString()} by BankingKhonde System`, 105, 290, { align: "center" });
+        }
+        
+        // Save the PDF
+        const fileName = `Profit_Sharing_Report_${groupName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+        doc.save(fileName);
+        
+        // Now clear the session data after PDF is generated
+        // We'll do this by making a small AJAX call or by redirecting
+        setTimeout(() => {
+            // Option 1: Redirect to clear the session
+            window.location.href = window.location.href.replace('&show_report=1', '');
+        }, 1000);
+    }
+    </script>
+    
 </body>
 
 </html>
+<?php
+// Clear the profit sharing report session data if we're not showing the report
+if (!isset($_GET['show_report']) && isset($_SESSION['profit_sharing_report'])) {
+    unset($_SESSION['profit_sharing_report']);
+}
+?>

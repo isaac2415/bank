@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PDF Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <button onclick="generatePDF()">Generate PDF</button>
+    
+    <script>
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Add content
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(20);
+            doc.text("Invoice", 105, 20, { align: "center" });
+            
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(12);
+            
+            // Add table-like structure
+            doc.text("Item", 20, 40);
+            doc.text("Quantity", 80, 40);
+            doc.text("Price", 140, 40);
+            
+            doc.line(20, 45, 180, 45);
+            
+            const items = [
+                { name: "Product A", qty: 2, price: "$20" },
+                { name: "Product B", qty: 1, price: "$15" },
+                { name: "Product C", qty: 3, price: "$25" }
+            ];
+            
+            items.forEach((item, index) => {
+                const y = 55 + (index * 10);
+                doc.text(item.name, 20, y);
+                doc.text(item.qty.toString(), 80, y);
+                doc.text(item.price, 140, y);
+            });
+            
+            // Save PDF
+            doc.save("invoice.pdf");
+        }
+    </script>
+</body>
+</html>
