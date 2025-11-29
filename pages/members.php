@@ -136,8 +136,8 @@ function removeMember($db) {
     <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-    <?php include '../includes/header.php'; ?>
-
+    <?php include '../includes/sidebar.php'; ?>
+       
     <main class="container">
         <?php if (isset($_SESSION['success'])): ?>
             <div class="message message-success"><?php echo $_SESSION['success']; unset($_SESSION['success']); ?></div>
@@ -394,5 +394,6 @@ function removeMember($db) {
         document.getElementById('recordPaymentModal').style.display = 'none';
     }
     </script>
+
 </body>
 </html>

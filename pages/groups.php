@@ -344,8 +344,7 @@ function shareProfits($db)
 </head>
 
 <body>
-    <?php include '../includes/header.php'; ?>
-
+    <?php include '../includes/sidebar.php'; ?> 
     <main class="container">
         <?php if (isset($_SESSION['success'])): ?>
             <div class="message message-success"><?php echo $_SESSION['success'];
@@ -926,7 +925,6 @@ function shareProfits($db)
         }, 1000);
     }
     </script>
-    
 </body>
 
 </html>

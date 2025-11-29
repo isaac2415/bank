@@ -146,7 +146,9 @@ $announcements = $stmt->fetchAll();
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
-    <?php include '../includes/header.php'; ?>
+    
+    <?php include '../includes/sidebar.php'; ?>
+    
 
     <main class="container">
         <h1>Welcome back, <?php echo htmlspecialchars($_SESSION['full_name']); ?>!</h1>

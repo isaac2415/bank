@@ -244,25 +244,19 @@ $recent_activity = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
         body {
-            background-color: #f5f7fb;
+            background-color: #b5b5b5ff;
             color: var(--dark);
             line-height: 1.6;
         }
 
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1.5rem;
+            width: 80%;
+            margin-right: 12px;
+            margin-left: auto;
         }
 
         /* Header Styles */
-        header {
-            background: white;
-            box-shadow: var(--shadow);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
+
 
         nav {
             display: flex;
@@ -870,10 +864,13 @@ $recent_activity = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body>
     <!-- Header -->
-<?php include '../includes/header.php'; ?>
+
     <!-- Profile Header -->
-    <div class="profile-header">
-        <div class="container">
+
+<?php include '../includes/sidebar.php'; ?>
+    <main class="container">
+            <div class="profile-header">
+        <div class="container1">
             <div class="profile-avatar">
                 <?php echo strtoupper(substr($user['full_name'], 0, 1)); ?>
             </div>
@@ -887,8 +884,6 @@ $recent_activity = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </div>
     </div>
-
-    <main class="container">
         <!-- Messages -->
         <?php if (isset($_SESSION['success'])): ?>
             <div class="message message-success">
