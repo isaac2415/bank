@@ -492,7 +492,7 @@ function createMeeting($db) {
                         $meeting_payments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 ?>
                 <div class="card">
-                    <h3>Recording Payments — Meeting on <?php echo date('F j, Y', strtotime($sel_meeting['meeting_date'])); ?></h3>
+                    <h3>Recording Payments Meeting on <?php echo date('F j, Y', strtotime($sel_meeting['meeting_date'])); ?></h3>
                     <div class="table-container">
                         <table>
                             <thead>
@@ -501,27 +501,51 @@ function createMeeting($db) {
                                     <th>Phone</th>
                                     <th>Status</th>
                                     <th>Payment Date</th>
+                                    <th>Amount</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <?php foreach ($meeting_payments as $mp): ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($mp['full_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($mp['phone']); ?></td>
-                                    <td><span class="status-badge status-<?php echo $mp['status']; ?>"><?php echo ucfirst($mp['status']); ?></span></td>
-                                    <td><?php echo $mp['payment_date'] ? date('M j, Y g:i A', strtotime($mp['payment_date'])) : '-'; ?></td>
-                                    <td>
-                                        <?php if ($mp['status'] !== 'paid'): ?>
-                                            <button type="button" class="btn btn-primary btn-small" onclick="recordPayment(<?php echo $mp['id']; ?>, <?php echo $mp['user_id']; ?>, '<?php echo addslashes($mp['full_name']); ?>', <?php echo $contribution_amount; ?>)">Record Payment</button>
-                                            <button type="button" class="btn btn-danger btn-small" onclick="markAsMissed(<?php echo $mp['id']; ?>, <?php echo $mp['user_id']; ?>)">Mark as Missed</button>
-                                        <?php else: ?>
-                                            <span class="status-badge status-paid">Paid</span>
-                                        <?php endif; ?>
-                                    </td>
-                                </tr>
-                                <?php endforeach; ?>
-                            </tbody>
+<tbody>
+    <?php foreach ($meeting_payments as $mp): ?>
+    <tr>
+        <td><?php echo htmlspecialchars($mp['full_name']); ?></td>
+        <td><?php echo htmlspecialchars($mp['phone']); ?></td>
+        <td><span class="status-badge status-<?php echo $mp['status']; ?>"><?php echo ucfirst($mp['status']); ?></span></td>
+        <td><?php echo $mp['payment_date'] ? date('M j, Y g:i A', strtotime($mp['payment_date'])) : '-'; ?></td>
+        <td>
+            <?php if ($mp['status'] !== 'paid'): ?>
+                <input type="number" 
+                       id="amount_<?php echo $mp['id']; ?>" 
+                       name="amount_<?php echo $mp['id']; ?>" 
+                       placeholder="Amount" 
+                       value="<?php echo $contribution_amount; ?>" 
+                       min="0" 
+                       step="0.01" 
+                       style="width: 80px; padding: 0.25rem;"
+                       onchange="updatePaymentAmount(<?php echo $mp['id']; ?>, this.value)">
+            <?php else: ?>
+                K <?php echo number_format($mp['amount'], 2); ?>
+            <?php endif; ?>
+        </td>
+        <td>
+            <?php if ($mp['status'] !== 'paid'): ?>
+                <button type="button" 
+                        class="btn btn-primary btn-small" 
+                        onclick="recordPayment(<?php echo $mp['id']; ?>, <?php echo $mp['user_id']; ?>, '<?php echo addslashes($mp['full_name']); ?>', document.getElementById('amount_<?php echo $mp['id']; ?>').value)">
+                    Record Payment
+                </button>
+                <button type="button" 
+                        class="btn btn-danger btn-small" 
+                        onclick="markAsMissed(<?php echo $mp['id']; ?>, <?php echo $mp['user_id']; ?>)">
+                    Mark as Missed
+                </button>
+            <?php else: ?>
+                <span class="status-badge status-paid">Paid</span>
+            <?php endif; ?>
+        </td>
+    </tr>
+    <?php endforeach; ?>
+</tbody>
                         </table>
                     </div>
                 </div>
@@ -804,6 +828,94 @@ function createMeeting($db) {
     function closePaymentModal() {
         document.getElementById('paymentModal').style.display = 'none';
     }
+    // Store payment amounts in a global object
+let paymentAmounts = {};
+
+function updatePaymentAmount(paymentId, amount) {
+    paymentAmounts[paymentId] = amount;
+}
+
+function recordPayment(paymentId, memberId, memberName, amount) {
+    // Use the amount from the input field or the stored amount
+    const inputAmount = document.getElementById('amount_' + paymentId)?.value || amount;
+    
+    if (!inputAmount || inputAmount <= 0) {
+        alert('Please enter a valid amount greater than 0.');
+        return;
+    }
+    
+    if (confirm(`Record payment of K ${inputAmount} for ${memberName}?`)) {
+        // Create and submit form
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.style.display = 'none';
+        
+        const actionInput = document.createElement('input');
+        actionInput.name = 'action';
+        actionInput.value = 'record_payment';
+        form.appendChild(actionInput);
+        
+        const paymentIdInput = document.createElement('input');
+        paymentIdInput.name = 'payment_id';
+        paymentIdInput.value = paymentId;
+        form.appendChild(paymentIdInput);
+        
+        const memberIdInput = document.createElement('input');
+        memberIdInput.name = 'member_id';
+        memberIdInput.value = memberId;
+        form.appendChild(memberIdInput);
+        
+        const amountInput = document.createElement('input');
+        amountInput.name = 'amount';
+        amountInput.value = inputAmount;
+        form.appendChild(amountInput);
+        
+        const statusInput = document.createElement('input');
+        statusInput.name = 'status';
+        statusInput.value = 'paid';
+        form.appendChild(statusInput);
+        
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+function markAsMissed(paymentId, memberId) {
+    if (confirm('Mark this payment as missed? The amount will be set to 0.')) {
+        // Create a hidden form and submit it
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.style.display = 'none';
+        
+        const actionInput = document.createElement('input');
+        actionInput.name = 'action';
+        actionInput.value = 'record_payment';
+        form.appendChild(actionInput);
+        
+        const paymentIdInput = document.createElement('input');
+        paymentIdInput.name = 'payment_id';
+        paymentIdInput.value = paymentId;
+        form.appendChild(paymentIdInput);
+        
+        const memberIdInput = document.createElement('input');
+        memberIdInput.name = 'member_id';
+        memberIdInput.value = memberId;
+        form.appendChild(memberIdInput);
+        
+        const amountInput = document.createElement('input');
+        amountInput.name = 'amount';
+        amountInput.value = '0';
+        form.appendChild(amountInput);
+        
+        const statusInput = document.createElement('input');
+        statusInput.name = 'status';
+        statusInput.value = 'missed';
+        form.appendChild(statusInput);
+        
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
     
     // Auto-load group payments if group is selected
     <?php if ($group_id): ?>
