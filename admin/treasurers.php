@@ -198,6 +198,164 @@ $stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
             line-height: 1.6;
         }
 
+        /* Layout */
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        /* .admin-sidebar {
+            width: 250px;
+            background: linear-gradient(135deg, var(--dark) 0%, var(--darker) 100%);
+            color: white;
+            transition: var(--transition);
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-sidebar.collapsed {
+            width: 70px;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .logo i {
+            color: var(--primary);
+            font-size: 1.5rem;
+            min-width: 25px;
+        }
+
+        .sidebar-toggle {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .sidebar-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .admin-sidebar.collapsed .sidebar-toggle i {
+            transform: rotate(180deg);
+        }
+
+        .admin-sidebar.collapsed .logo span {
+            display: none;
+        } */
+
+        /* Sidebar Navigation */
+        .sidebar-nav {
+            flex: 1;
+            padding: 1rem 0;
+        }
+
+        .sidebar-nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-nav-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: var(--transition);
+            border-radius: 0;
+            margin: 0 0.5rem;
+            border-radius: 5px;
+        }
+
+        .sidebar-nav-links a:hover,
+        .sidebar-nav-links a.active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-nav-links i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .admin-sidebar.collapsed .link-text {
+            display: none;
+        }
+
+        /* Main Content Area */
+        .admin-main {
+            flex: 1;
+            margin-left: 250px;
+            transition: margin-left 0.3s ease;
+            background-color: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .admin-sidebar.collapsed ~ .admin-main {
+            margin-left: 70px;
+        }
+
+        .main-header {
+            background: white;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            color: var(--dark);
+        }
+
+        .main-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--dark);
+        }
+
+        .main-content {
+            padding: 1.5rem;
+        }
+
+        /* Container */
         .container {
             width: 100%;
             max-width: 1400px;
@@ -547,6 +705,36 @@ $stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
 
         /* Responsive Design */
         @media (max-width: 768px) {
+            .admin-sidebar {
+                transform: translateX(-100%);
+                width: 250px;
+            }
+
+            .admin-sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+            .admin-sidebar.collapsed {
+                transform: translateX(-100%);
+            }
+
+            .admin-main {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .admin-sidebar.collapsed ~ .admin-main {
+                margin-left: 0;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .sidebar-toggle {
+                display: none;
+            }
+
             .filter-tabs {
                 flex-direction: column;
             }
@@ -579,6 +767,10 @@ $stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
         }
 
         @media (max-width: 576px) {
+            .admin-sidebar {
+                width: 100%;
+            }
+
             .stats-container {
                 grid-template-columns: 1fr;
             }
@@ -594,240 +786,253 @@ $stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
     </style>
 </head>
 <body>
-    <?php include 'includes/header.php'; ?>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <?php include 'includes/sidebar.php'; ?>
 
-    <main class="container">
-        <?php if (isset($_SESSION['success'])): ?>
-            <div class="message message-success">
-                <i class="fas fa-check-circle"></i>
-                <?php echo $_SESSION['success']; unset($_SESSION['success']); ?>
-            </div>
-        <?php endif; ?>
-        
-        <?php if (isset($_SESSION['error'])): ?>
-            <div class="message message-error">
-                <i class="fas fa-exclamation-circle"></i>
-                <?php echo $_SESSION['error']; unset($_SESSION['error']); ?>
-            </div>
-        <?php endif; ?>
-
-        <div class="card">
-            <h2><i class="fas fa-user-tie"></i> Manage Treasurers</h2>
+        <!-- Main Content -->
+        <main class="admin-main" id="adminMain">
+            <header class="main-header">
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>Manage Treasurers</h1>
+            </header>
             
-            <!-- Statistics -->
-            <div class="stats-container">
-                <div class="stat-card">
-                    <div class="stat-number"><?php echo $stats['total']; ?></div>
-                    <div>Total Treasurers</div>
-                </div>
-                <div class="stat-card pending">
-                    <div class="stat-number"><?php echo $stats['pending']; ?></div>
-                    <div>Pending Verification</div>
-                </div>
-                <div class="stat-card verified">
-                    <div class="stat-number"><?php echo $stats['verified']; ?></div>
-                    <div>Verified</div>
-                </div>
-                <div class="stat-card rejected">
-                    <div class="stat-number"><?php echo $stats['rejected']; ?></div>
-                    <div>Rejected</div>
-                </div>
-            </div>
-            
-            <!-- Filter Tabs -->
-            <div class="filter-tabs">
-                <a href="treasurers.php?filter=all" class="filter-tab <?php echo $filter === 'all' ? 'active' : ''; ?>">
-                    <i class="fas fa-users"></i>
-                    All Treasurers (<?php echo $stats['total']; ?>)
-                </a>
-                <a href="treasurers.php?filter=pending" class="filter-tab <?php echo $filter === 'pending' ? 'active' : ''; ?>">
-                    <i class="fas fa-clock"></i>
-                    Pending (<?php echo $stats['pending']; ?>)
-                </a>
-                <a href="treasurers.php?filter=verified" class="filter-tab <?php echo $filter === 'verified' ? 'active' : ''; ?>">
-                    <i class="fas fa-check-circle"></i>
-                    Verified (<?php echo $stats['verified']; ?>)
-                </a>
-                <a href="treasurers.php?filter=rejected" class="filter-tab <?php echo $filter === 'rejected' ? 'active' : ''; ?>">
-                    <i class="fas fa-times-circle"></i>
-                    Rejected (<?php echo $stats['rejected']; ?>)
-                </a>
-                <a href="treasurers.php?filter=inactive" class="filter-tab <?php echo $filter === 'inactive' ? 'active' : ''; ?>">
-                    <i class="fas fa-user-slash"></i>
-                    Inactive
-                </a>
-            </div>
+            <div class="main-content">
+                <?php if (isset($_SESSION['success'])): ?>
+                    <div class="message message-success">
+                        <i class="fas fa-check-circle"></i>
+                        <?php echo $_SESSION['success']; unset($_SESSION['success']); ?>
+                    </div>
+                <?php endif; ?>
+                
+                <?php if (isset($_SESSION['error'])): ?>
+                    <div class="message message-error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <?php echo $_SESSION['error']; unset($_SESSION['error']); ?>
+                    </div>
+                <?php endif; ?>
 
-            <?php if (empty($treasurers)): ?>
-                <div class="no-data">
-                    <i class="fas fa-user-times"></i>
-                    <h3>No Treasurers Found</h3>
-                    <p>No treasurers match the current filter criteria.</p>
-                </div>
-            <?php else: ?>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>User Information</th>
-                                <th>Contact Details</th>
-                                <th>Groups & Loans</th>
-                                <th>Status</th>
-                                <th>Registration</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($treasurers as $treasurer): ?>
-                            <tr>
-                                <td>
-                                    <strong><?php echo htmlspecialchars($treasurer['full_name']); ?></strong>
-                                    <div style="font-size: 0.875rem; color: var(--gray);">
-                                        <i class="fas fa-user"></i>
-                                        @<?php echo htmlspecialchars($treasurer['username']); ?>
-                                    </div>
-                                    <div style="font-size: 0.75rem; color: #999;">
-                                        ID: <?php echo $treasurer['id']; ?>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
-                                        <i class="fas fa-envelope"></i>
-                                        <?php echo htmlspecialchars($treasurer['email']); ?>
-                                    </div>
-                                    <?php if ($treasurer['phone']): ?>
-                                        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.875rem; color: var(--gray);">
-                                            <i class="fas fa-phone"></i>
-                                            <?php echo htmlspecialchars($treasurer['phone']); ?>
-                                        </div>
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
-                                        <i class="fas fa-users"></i>
-                                        <strong><?php echo $treasurer['group_count']; ?></strong> groups
-                                    </div>
-                                    <div style="display: flex; align-items: center; gap: 8px; font-size: 0.875rem; color: var(--gray);">
-                                        <i class="fas fa-hand-holding-usd"></i>
-                                        <strong><?php echo $treasurer['loan_count']; ?></strong> loans
-                                    </div>
-                                </td>
-                                <td>
-                                    <?php
-                                    $status_class = '';
-                                    $status_text = '';
-                                    $status_icon = '';
-                                    switch ($treasurer['verified']) {
-                                        case 'yes':
-                                            $status_class = 'status-verified';
-                                            $status_text = 'Verified';
-                                            $status_icon = 'fa-check-circle';
-                                            break;
-                                        case NULL:
-                                            $status_class = 'status-pending';
-                                            $status_text = 'Pending';
-                                            $status_icon = 'fa-clock';
-                                            break;
-                                        case 'rejected':
-                                            $status_class = 'status-rejected';
-                                            $status_text = 'Rejected';
-                                            $status_icon = 'fa-times-circle';
-                                            break;
-                                        default:
-                                            $status_class = 'status-pending';
-                                            $status_text = 'Pending';
-                                            $status_icon = 'fa-clock';
-                                    }
-                                    ?>
-                                    <span class="status-badge <?php echo $status_class; ?>">
-                                        <i class="fas <?php echo $status_icon; ?>"></i>
-                                        <?php echo $status_text; ?>
-                                    </span>
-                                    
-                                    <?php if ($treasurer['verified'] === 'yes' && $treasurer['verified_at']): ?>
-                                        <div class="verification-info">
-                                            <i class="fas fa-calendar-check"></i>
-                                            Verified: <?php echo date('M j, Y', strtotime($treasurer['verified_at'])); ?>
-                                        </div>
-                                    <?php endif; ?>
-                                    
-                                    <?php if (!$treasurer['is_active']): ?>
-                                        <span class="status-badge status-inactive" style="margin-top: 0.25rem;">
-                                            <i class="fas fa-user-slash"></i>
-                                            Inactive
-                                        </span>
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
-                                        <i class="fas fa-calendar-plus"></i>
-                                        <?php echo date('M j, Y', strtotime($treasurer['created_at'])); ?>
-                                    </div>
-                                    <?php if ($treasurer['last_login']): ?>
-                                        <div style="font-size: 0.75rem; color: var(--gray);">
-                                            <i class="fas fa-sign-in-alt"></i>
-                                            Last login: <?php echo date('M j, Y', strtotime($treasurer['last_login'])); ?>
-                                        </div>
-                                    <?php else: ?>
-                                        <div style="font-size: 0.75rem; color: #999;">
-                                            <i class="fas fa-times"></i>
-                                            Never logged in
-                                        </div>
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <div class="btn-group">
-                                        <!-- VERIFY BUTTON - Shows ONLY for users who are NOT verified (verified = 'no') -->
-                                        <?php if ($treasurer['verified'] === NULL): ?>
-                                            <form method="POST" style="display: inline;">
-                                                <input type="hidden" name="action" value="verify_treasurer">
-                                                <input type="hidden" name="user_id" value="<?php echo $treasurer['id']; ?>">
-                                                <button type="submit" class="btn btn-success btn-sm" 
-                                                        onclick="return confirm('Verify <?php echo addslashes($treasurer['full_name']); ?> as treasurer? This will grant them access to manage groups and loans.')">
-                                                    <i class="fas fa-check"></i> Verify
-                                                </button>
-                                            </form>
-                                            
-                                            <button type="button" class="btn btn-danger btn-sm" 
-                                                    onclick="showRejectModal(<?php echo $treasurer['id']; ?>, '<?php echo addslashes($treasurer['full_name']); ?>')">
-                                                <i class="fas fa-times"></i> Reject
-                                            </button>
-                                        <?php elseif ($treasurer['verified'] === 'yes'): ?>
-                                            <span class="status-badge status-verified" style="font-size: 0.7rem;">
-                                                <i class="fas fa-check"></i> Verified
+                <div class="card">
+                    <h2><i class="fas fa-user-tie"></i> Manage Treasurers</h2>
+                    
+                    <!-- Statistics -->
+                    <div class="stats-container">
+                        <div class="stat-card">
+                            <div class="stat-number"><?php echo $stats['total']; ?></div>
+                            <div>Total Treasurers</div>
+                        </div>
+                        <div class="stat-card pending">
+                            <div class="stat-number"><?php echo $stats['pending']; ?></div>
+                            <div>Pending Verification</div>
+                        </div>
+                        <div class="stat-card verified">
+                            <div class="stat-number"><?php echo $stats['verified']; ?></div>
+                            <div>Verified</div>
+                        </div>
+                        <div class="stat-card rejected">
+                            <div class="stat-number"><?php echo $stats['rejected']; ?></div>
+                            <div>Rejected</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Filter Tabs -->
+                    <div class="filter-tabs">
+                        <a href="treasurers.php?filter=all" class="filter-tab <?php echo $filter === 'all' ? 'active' : ''; ?>">
+                            <i class="fas fa-users"></i>
+                            All Treasurers (<?php echo $stats['total']; ?>)
+                        </a>
+                        <a href="treasurers.php?filter=pending" class="filter-tab <?php echo $filter === 'pending' ? 'active' : ''; ?>">
+                            <i class="fas fa-clock"></i>
+                            Pending (<?php echo $stats['pending']; ?>)
+                        </a>
+                        <a href="treasurers.php?filter=verified" class="filter-tab <?php echo $filter === 'verified' ? 'active' : ''; ?>">
+                            <i class="fas fa-check-circle"></i>
+                            Verified (<?php echo $stats['verified']; ?>)
+                        </a>
+                        <a href="treasurers.php?filter=rejected" class="filter-tab <?php echo $filter === 'rejected' ? 'active' : ''; ?>">
+                            <i class="fas fa-times-circle"></i>
+                            Rejected (<?php echo $stats['rejected']; ?>)
+                        </a>
+                        <a href="treasurers.php?filter=inactive" class="filter-tab <?php echo $filter === 'inactive' ? 'active' : ''; ?>">
+                            <i class="fas fa-user-slash"></i>
+                            Inactive
+                        </a>
+                    </div>
+
+                    <?php if (empty($treasurers)): ?>
+                        <div class="no-data">
+                            <i class="fas fa-user-times"></i>
+                            <h3>No Treasurers Found</h3>
+                            <p>No treasurers match the current filter criteria.</p>
+                        </div>
+                    <?php else: ?>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>User Information</th>
+                                        <th>Contact Details</th>
+                                        <th>Groups & Loans</th>
+                                        <th>Status</th>
+                                        <th>Registration</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($treasurers as $treasurer): ?>
+                                    <tr>
+                                        <td>
+                                            <strong><?php echo htmlspecialchars($treasurer['full_name']); ?></strong>
+                                            <div style="font-size: 0.875rem; color: var(--gray);">
+                                                <i class="fas fa-user"></i>
+                                                @<?php echo htmlspecialchars($treasurer['username']); ?>
+                                            </div>
+                                            <div style="font-size: 0.75rem; color: #999;">
+                                                ID: <?php echo $treasurer['id']; ?>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
+                                                <i class="fas fa-envelope"></i>
+                                                <?php echo htmlspecialchars($treasurer['email']); ?>
+                                            </div>
+                                            <?php if ($treasurer['phone']): ?>
+                                                <div style="display: flex; align-items: center; gap: 8px; font-size: 0.875rem; color: var(--gray);">
+                                                    <i class="fas fa-phone"></i>
+                                                    <?php echo htmlspecialchars($treasurer['phone']); ?>
+                                                </div>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
+                                                <i class="fas fa-users"></i>
+                                                <strong><?php echo $treasurer['group_count']; ?></strong> groups
+                                            </div>
+                                            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.875rem; color: var(--gray);">
+                                                <i class="fas fa-hand-holding-usd"></i>
+                                                <strong><?php echo $treasurer['loan_count']; ?></strong> loans
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <?php
+                                            $status_class = '';
+                                            $status_text = '';
+                                            $status_icon = '';
+                                            switch ($treasurer['verified']) {
+                                                case 'yes':
+                                                    $status_class = 'status-verified';
+                                                    $status_text = 'Verified';
+                                                    $status_icon = 'fa-check-circle';
+                                                    break;
+                                                case NULL:
+                                                    $status_class = 'status-pending';
+                                                    $status_text = 'Pending';
+                                                    $status_icon = 'fa-clock';
+                                                    break;
+                                                case 'rejected':
+                                                    $status_class = 'status-rejected';
+                                                    $status_text = 'Rejected';
+                                                    $status_icon = 'fa-times-circle';
+                                                    break;
+                                                default:
+                                                    $status_class = 'status-pending';
+                                                    $status_text = 'Pending';
+                                                    $status_icon = 'fa-clock';
+                                            }
+                                            ?>
+                                            <span class="status-badge <?php echo $status_class; ?>">
+                                                <i class="fas <?php echo $status_icon; ?>"></i>
+                                                <?php echo $status_text; ?>
                                             </span>
-                                        <?php endif; ?>
-                                        
-                                        <!-- ACTIVATE/DEACTIVATE BUTTONS - Separate from verification -->
-                                        <?php if ($treasurer['is_active']): ?>
-                                            <form method="POST" style="display: inline;">
-                                                <input type="hidden" name="action" value="deactivate_user">
-                                                <input type="hidden" name="user_id" value="<?php echo $treasurer['id']; ?>">
-                                                <button type="submit" class="btn btn-warning btn-sm" 
-                                                        onclick="return confirm('Deactivate <?php echo addslashes($treasurer['full_name']); ?>? They will not be able to login.')">
-                                                    <i class="fas fa-user-slash"></i> Deactivate
-                                                </button>
-                                            </form>
-                                        <?php else: ?>
-                                            <form method="POST" style="display: inline;">
-                                                <input type="hidden" name="action" value="activate_user">
-                                                <input type="hidden" name="user_id" value="<?php echo $treasurer['id']; ?>">
-                                                <button type="submit" class="btn btn-info btn-sm" 
-                                                        onclick="return confirm('Activate <?php echo addslashes($treasurer['full_name']); ?>? They will be able to login again.')">
-                                                    <i class="fas fa-user-check"></i> Activate
-                                                </button>
-                                            </form>
-                                        <?php endif; ?>
-                                    </div>
-                                </td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
+                                            
+                                            <?php if ($treasurer['verified'] === 'yes' && $treasurer['verified_at']): ?>
+                                                <div class="verification-info">
+                                                    <i class="fas fa-calendar-check"></i>
+                                                    Verified: <?php echo date('M j, Y', strtotime($treasurer['verified_at'])); ?>
+                                                </div>
+                                            <?php endif; ?>
+                                            
+                                            <?php if (!$treasurer['is_active']): ?>
+                                                <span class="status-badge status-inactive" style="margin-top: 0.25rem;">
+                                                    <i class="fas fa-user-slash"></i>
+                                                    Inactive
+                                                </span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
+                                                <i class="fas fa-calendar-plus"></i>
+                                                <?php echo date('M j, Y', strtotime($treasurer['created_at'])); ?>
+                                            </div>
+                                            <?php if ($treasurer['last_login']): ?>
+                                                <div style="font-size: 0.75rem; color: var(--gray);">
+                                                    <i class="fas fa-sign-in-alt"></i>
+                                                    Last login: <?php echo date('M j, Y', strtotime($treasurer['last_login'])); ?>
+                                                </div>
+                                            <?php else: ?>
+                                                <div style="font-size: 0.75rem; color: #999;">
+                                                    <i class="fas fa-times"></i>
+                                                    Never logged in
+                                                </div>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <!-- VERIFY BUTTON - Shows ONLY for users who are NOT verified (verified = 'no') -->
+                                                <?php if ($treasurer['verified'] === NULL): ?>
+                                                    <form method="POST" style="display: inline;">
+                                                        <input type="hidden" name="action" value="verify_treasurer">
+                                                        <input type="hidden" name="user_id" value="<?php echo $treasurer['id']; ?>">
+                                                        <button type="submit" class="btn btn-success btn-sm" 
+                                                                onclick="return confirm('Verify <?php echo addslashes($treasurer['full_name']); ?> as treasurer? This will grant them access to manage groups and loans.')">
+                                                            <i class="fas fa-check"></i> Verify
+                                                        </button>
+                                                    </form>
+                                                    
+                                                    <button type="button" class="btn btn-danger btn-sm" 
+                                                            onclick="showRejectModal(<?php echo $treasurer['id']; ?>, '<?php echo addslashes($treasurer['full_name']); ?>')">
+                                                        <i class="fas fa-times"></i> Reject
+                                                    </button>
+                                                <?php elseif ($treasurer['verified'] === 'yes'): ?>
+                                                    <span class="status-badge status-verified" style="font-size: 0.7rem;">
+                                                        <i class="fas fa-check"></i> Verified
+                                                    </span>
+                                                <?php endif; ?>
+                                                
+                                                <!-- ACTIVATE/DEACTIVATE BUTTONS - Separate from verification -->
+                                                <?php if ($treasurer['is_active']): ?>
+                                                    <form method="POST" style="display: inline;">
+                                                        <input type="hidden" name="action" value="deactivate_user">
+                                                        <input type="hidden" name="user_id" value="<?php echo $treasurer['id']; ?>">
+                                                        <button type="submit" class="btn btn-warning btn-sm" 
+                                                                onclick="return confirm('Deactivate <?php echo addslashes($treasurer['full_name']); ?>? They will not be able to login.')">
+                                                            <i class="fas fa-user-slash"></i> Deactivate
+                                                        </button>
+                                                    </form>
+                                                <?php else: ?>
+                                                    <form method="POST" style="display: inline;">
+                                                        <input type="hidden" name="action" value="activate_user">
+                                                        <input type="hidden" name="user_id" value="<?php echo $treasurer['id']; ?>">
+                                                        <button type="submit" class="btn btn-info btn-sm" 
+                                                                onclick="return confirm('Activate <?php echo addslashes($treasurer['full_name']); ?>? They will be able to login again.')">
+                                                            <i class="fas fa-user-check"></i> Activate
+                                                        </button>
+                                                    </form>
+                                                <?php endif; ?>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php endif; ?>
                 </div>
-            <?php endif; ?>
-        </div>
-    </main>
+            </div>
+        </main>
+    </div>
 
     <!-- Reject Modal -->
     <div id="rejectModal" class="modal">
@@ -856,6 +1061,53 @@ $stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
     </div>
 
     <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.getElementById('adminSidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const adminMain = document.getElementById('adminMain');
+
+        // Toggle sidebar collapse/expand
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('collapsed');
+                
+                // Save state to localStorage
+                const isCollapsed = sidebar.classList.contains('collapsed');
+                localStorage.setItem('sidebarCollapsed', isCollapsed);
+            });
+        }
+
+        // Toggle mobile menu
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener('click', function() {
+                sidebar.classList.toggle('mobile-open');
+            });
+        }
+
+        // Close mobile menu when clicking on main content
+        if (adminMain) {
+            adminMain.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove('mobile-open');
+                }
+            });
+        }
+
+        // Load sidebar state from localStorage
+        const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+        if (sidebarCollapsed) {
+            sidebar.classList.add('collapsed');
+        }
+
+        // Close mobile menu on window resize if it goes above mobile breakpoint
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                sidebar.classList.remove('mobile-open');
+            }
+        });
+    });
+
     function showRejectModal(userId, userName) {
         document.getElementById('rejectUserId').value = userId;
         document.getElementById('rejectUserName').textContent = 'Reject application for: ' + userName;

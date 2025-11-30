@@ -84,7 +84,6 @@ $stmt = $db->prepare($query);
 $stmt->execute();
 $groups = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -122,6 +121,165 @@ $groups = $stmt->fetchAll(PDO::FETCH_ASSOC);
             line-height: 1.6;
         }
 
+        /* Layout */
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        /* .admin-sidebar {
+            width: 250px;
+            background: linear-gradient(135deg, var(--dark) 0%, var(--darker) 100%);
+            color: white;
+            transition: var(--transition);
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-sidebar.collapsed {
+            width: 70px;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .logo i {
+            color: var(--primary);
+            font-size: 1.5rem;
+            min-width: 25px;
+        }
+
+        .sidebar-toggle {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .sidebar-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .admin-sidebar.collapsed .sidebar-toggle i {
+            transform: rotate(180deg);
+        }
+
+        .admin-sidebar.collapsed .logo span {
+            display: none;
+        } */
+
+            
+        /* Sidebar Navigation */
+        .sidebar-nav {
+            flex: 1;
+            padding: 1rem 0;
+        }
+
+        .sidebar-nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-nav-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: var(--transition);
+            border-radius: 0;
+            margin: 0 0.5rem;
+            border-radius: 5px;
+        }
+
+        .sidebar-nav-links a:hover,
+        .sidebar-nav-links a.active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-nav-links i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .admin-sidebar.collapsed .link-text {
+            display: none;
+        }
+
+        /* Main Content Area */
+        .admin-main {
+            flex: 1;
+            margin-left: 250px;
+            transition: margin-left 0.3s ease;
+            background-color: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .admin-sidebar.collapsed ~ .admin-main {
+            margin-left: 70px;
+        }
+
+        .main-header {
+            background: white;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            color: var(--dark);
+        }
+
+        .main-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--dark);
+        }
+
+        .main-content {
+            padding: 1.5rem;
+        }
+
+        /* Container */
         .container {
             width: 100%;
             max-width: 1400px;
@@ -393,6 +551,36 @@ $groups = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         /* Responsive Design */
         @media (max-width: 768px) {
+            .admin-sidebar {
+                transform: translateX(-100%);
+                width: 250px;
+            }
+
+            .admin-sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+            .admin-sidebar.collapsed {
+                transform: translateX(-100%);
+            }
+
+            .admin-main {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .admin-sidebar.collapsed ~ .admin-main {
+                margin-left: 0;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .sidebar-toggle {
+                display: none;
+            }
+
             .card {
                 padding: 1rem;
             }
@@ -417,6 +605,10 @@ $groups = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
         @media (max-width: 576px) {
+            .admin-sidebar {
+                width: 100%;
+            }
+
             .card h2 {
                 font-size: 1.3rem;
             }
@@ -433,153 +625,215 @@ $groups = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
-    <?php include 'includes/header.php'; ?>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <?php include 'includes/sidebar.php'; ?>
 
-    <main class="container">
-        <?php if (isset($_SESSION['success'])): ?>
-            <div class="message message-success">
-                <i class="fas fa-check-circle"></i>
-                <?php echo $_SESSION['success']; unset($_SESSION['success']); ?>
-            </div>
-        <?php endif; ?>
-        
-        <?php if (isset($_SESSION['error'])): ?>
-            <div class="message message-error">
-                <i class="fas fa-exclamation-circle"></i>
-                <?php echo $_SESSION['error']; unset($_SESSION['error']); ?>
-            </div>
-        <?php endif; ?>
-
-        <div class="card">
-            <h2><i class="fas fa-users"></i> Manage Groups</h2>
+        <!-- Main Content -->
+        <main class="admin-main" id="adminMain">
+            <header class="main-header">
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>Manage Groups</h1>
+            </header>
             
-            <?php if (empty($groups)): ?>
-                <div class="no-data">
-                    <i class="fas fa-users-slash"></i>
-                    <h3>No Groups Found</h3>
-                    <p>There are no groups in the system yet.</p>
+            <div class="main-content">
+                <?php if (isset($_SESSION['success'])): ?>
+                    <div class="message message-success">
+                        <i class="fas fa-check-circle"></i>
+                        <?php echo $_SESSION['success']; unset($_SESSION['success']); ?>
+                    </div>
+                <?php endif; ?>
+                
+                <?php if (isset($_SESSION['error'])): ?>
+                    <div class="message message-error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <?php echo $_SESSION['error']; unset($_SESSION['error']); ?>
+                    </div>
+                <?php endif; ?>
+
+                <div class="card">
+                    <h2><i class="fas fa-users"></i> Manage Groups</h2>
+                    
+                    <?php if (empty($groups)): ?>
+                        <div class="no-data">
+                            <i class="fas fa-users-slash"></i>
+                            <h3>No Groups Found</h3>
+                            <p>There are no groups in the system yet.</p>
+                        </div>
+                    <?php else: ?>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Group Information</th>
+                                        <th>Treasurer</th>
+                                        <th>Statistics</th>
+                                        <th>Financials</th>
+                                        <th>Status</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($groups as $group): ?>
+                                    <tr>
+                                        <td>
+                                            <div class="group-info-main">
+                                                <i class="fas fa-users"></i>
+                                                <?php echo htmlspecialchars($group['name']); ?>
+                                            </div>
+                                            <div class="group-info-code">
+                                                <i class="fas fa-hashtag"></i>
+                                                <?php echo $group['code']; ?>
+                                            </div>
+                                            <div class="group-info-details">
+                                                <div>
+                                                    <i class="fas fa-calendar-alt"></i>
+                                                    <?php 
+                                                    $frequency_map = [
+                                                        'weekly_once' => 'Weekly Once',
+                                                        'weekly_twice' => 'Weekly Twice', 
+                                                        'monthly_thrice' => 'Monthly Thrice'
+                                                    ];
+                                                    echo $frequency_map[$group['meeting_frequency']] ?? $group['meeting_frequency'];
+                                                    ?>
+                                                </div>
+                                                <div>
+                                                    <i class="fas fa-money-bill-wave"></i>
+                                                    K<?php echo number_format($group['contribution_amount'], 2); ?> per contribution
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="treasurer-info-main">
+                                                <i class="fas fa-user-tie"></i>
+                                                <?php echo htmlspecialchars($group['treasurer_name']); ?>
+                                            </div>
+                                            <div class="treasurer-info-username">
+                                                @<?php echo htmlspecialchars($group['treasurer_username']); ?>
+                                            </div>
+                                            <span class="status-badge <?php echo $group['treasurer_verified'] === 'yes' ? 'status-verified' : 'status-pending'; ?>" style="margin-top: 0.5rem;">
+                                                <i class="fas <?php echo $group['treasurer_verified'] === 'yes' ? 'fa-check-circle' : 'fa-clock'; ?>"></i>
+                                                <?php echo $group['treasurer_verified'] === 'yes' ? 'Verified' : 'Pending'; ?>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="stats-item">
+                                                <div class="stats-main">
+                                                    <i class="fas fa-users"></i>
+                                                    <?php echo $group['member_count']; ?> Members
+                                                </div>
+                                                <div class="stats-details">
+                                                    <i class="fas fa-hand-holding-usd"></i>
+                                                    <?php echo $group['loan_count']; ?> Active Loans
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="financial-amount">
+                                                <i class="fas fa-wallet"></i>
+                                                K <?php echo number_format($group['total_contributions'], 2); ?>
+                                            </div>
+                                            <div class="financial-details">
+                                                <i class="fas fa-percentage"></i>
+                                                <?php echo $group['interest_rate']; ?>% Interest Rate
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <form method="POST" style="display: inline;">
+                                                <input type="hidden" name="action" value="update_group_status">
+                                                <input type="hidden" name="group_id" value="<?php echo $group['id']; ?>">
+                                                <select name="status" class="status-select" onchange="this.form.submit()">
+                                                    <option value="active" <?php echo $group['status'] === 'active' ? 'selected' : ''; ?>>Active</option>
+                                                    <option value="ended" <?php echo $group['status'] === 'ended' ? 'selected' : ''; ?>>Ended</option>
+                                                    <option value="restarted" <?php echo $group['status'] === 'restarted' ? 'selected' : ''; ?>>Restarted</option>
+                                                </select>
+                                            </form>
+                                        </td>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 8px; color: var(--dark); font-weight: 500;">
+                                                <i class="fas fa-calendar-plus"></i>
+                                                <?php echo date('M j, Y', strtotime($group['created_at'])); ?>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="action-buttons">
+                                                <!-- <a href="../pages/groups.php?action=view&id=<?php echo $group['id']; ?>" 
+                                                   class="btn btn-view" target="_blank">
+                                                    <i class="fas fa-eye"></i>
+                                                    View Group
+                                                </a> -->
+                                                <form method="POST" style="display: inline;">
+                                                    <input type="hidden" name="action" value="delete_group">
+                                                    <input type="hidden" name="group_id" value="<?php echo $group['id']; ?>">
+                                                    <button type="submit" class="btn btn-delete" 
+                                                            onclick="return confirm('WARNING: This will permanently delete this group and all its data. This action cannot be undone. Are you sure?')">
+                                                        <i class="fas fa-trash"></i>
+                                                        Delete Group
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php endif; ?>
                 </div>
-            <?php else: ?>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Group Information</th>
-                                <th>Treasurer</th>
-                                <th>Statistics</th>
-                                <th>Financials</th>
-                                <th>Status</th>
-                                <th>Created</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($groups as $group): ?>
-                            <tr>
-                                <td>
-                                    <div class="group-info-main">
-                                        <i class="fas fa-users"></i>
-                                        <?php echo htmlspecialchars($group['name']); ?>
-                                    </div>
-                                    <div class="group-info-code">
-                                        <i class="fas fa-hashtag"></i>
-                                        <?php echo $group['code']; ?>
-                                    </div>
-                                    <div class="group-info-details">
-                                        <div>
-                                            <i class="fas fa-calendar-alt"></i>
-                                            <?php 
-                                            $frequency_map = [
-                                                'weekly_once' => 'Weekly Once',
-                                                'weekly_twice' => 'Weekly Twice', 
-                                                'monthly_thrice' => 'Monthly Thrice'
-                                            ];
-                                            echo $frequency_map[$group['meeting_frequency']] ?? $group['meeting_frequency'];
-                                            ?>
-                                        </div>
-                                        <div>
-                                            <i class="fas fa-money-bill-wave"></i>
-                                            K<?php echo number_format($group['contribution_amount'], 2); ?> per contribution
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="treasurer-info-main">
-                                        <i class="fas fa-user-tie"></i>
-                                        <?php echo htmlspecialchars($group['treasurer_name']); ?>
-                                    </div>
-                                    <div class="treasurer-info-username">
-                                        @<?php echo htmlspecialchars($group['treasurer_username']); ?>
-                                    </div>
-                                    <span class="status-badge <?php echo $group['treasurer_verified'] === 'yes' ? 'status-verified' : 'status-pending'; ?>" style="margin-top: 0.5rem;">
-                                        <i class="fas <?php echo $group['treasurer_verified'] === 'yes' ? 'fa-check-circle' : 'fa-clock'; ?>"></i>
-                                        <?php echo $group['treasurer_verified'] === 'yes' ? 'Verified' : 'Pending'; ?>
-                                    </span>
-                                </td>
-                                <td>
-                                    <div class="stats-item">
-                                        <div class="stats-main">
-                                            <i class="fas fa-users"></i>
-                                            <?php echo $group['member_count']; ?> Members
-                                        </div>
-                                        <div class="stats-details">
-                                            <i class="fas fa-hand-holding-usd"></i>
-                                            <?php echo $group['loan_count']; ?> Active Loans
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="financial-amount">
-                                        <i class="fas fa-wallet"></i>
-                                        K <?php echo number_format($group['total_contributions'], 2); ?>
-                                    </div>
-                                    <div class="financial-details">
-                                        <i class="fas fa-percentage"></i>
-                                        <?php echo $group['interest_rate']; ?>% Interest Rate
-                                    </div>
-                                </td>
-                                <td>
-                                    <form method="POST" style="display: inline;">
-                                        <input type="hidden" name="action" value="update_group_status">
-                                        <input type="hidden" name="group_id" value="<?php echo $group['id']; ?>">
-                                        <select name="status" class="status-select" onchange="this.form.submit()">
-                                            <option value="active" <?php echo $group['status'] === 'active' ? 'selected' : ''; ?>>Active</option>
-                                            <option value="ended" <?php echo $group['status'] === 'ended' ? 'selected' : ''; ?>>Ended</option>
-                                            <option value="restarted" <?php echo $group['status'] === 'restarted' ? 'selected' : ''; ?>>Restarted</option>
-                                        </select>
-                                    </form>
-                                </td>
-                                <td>
-                                    <div style="display: flex; align-items: center; gap: 8px; color: var(--dark); font-weight: 500;">
-                                        <i class="fas fa-calendar-plus"></i>
-                                        <?php echo date('M j, Y', strtotime($group['created_at'])); ?>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <!-- <a href="../pages/groups.php?action=view&id=<?php echo $group['id']; ?>" 
-                                           class="btn btn-view" target="_blank">
-                                            <i class="fas fa-eye"></i>
-                                            View Group
-                                        </a> -->
-                                        <form method="POST" style="display: inline;">
-                                            <input type="hidden" name="action" value="delete_group">
-                                            <input type="hidden" name="group_id" value="<?php echo $group['id']; ?>">
-                                            <button type="submit" class="btn btn-delete" 
-                                                    onclick="return confirm('WARNING: This will permanently delete this group and all its data. This action cannot be undone. Are you sure?')">
-                                                <i class="fas fa-trash"></i>
-                                                Delete Group
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-            <?php endif; ?>
-        </div>
-    </main>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('adminSidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const adminMain = document.getElementById('adminMain');
+
+            // Toggle sidebar collapse/expand
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('collapsed');
+                    
+                    // Save state to localStorage
+                    const isCollapsed = sidebar.classList.contains('collapsed');
+                    localStorage.setItem('sidebarCollapsed', isCollapsed);
+                });
+            }
+
+            // Toggle mobile menu
+            if (mobileMenuBtn) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    sidebar.classList.toggle('mobile-open');
+                });
+            }
+
+            // Close mobile menu when clicking on main content
+            if (adminMain) {
+                adminMain.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('mobile-open');
+                    }
+                });
+            }
+
+            // Load sidebar state from localStorage
+            const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (sidebarCollapsed) {
+                sidebar.classList.add('collapsed');
+            }
+
+            // Close mobile menu on window resize if it goes above mobile breakpoint
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    sidebar.classList.remove('mobile-open');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

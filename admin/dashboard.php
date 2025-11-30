@@ -107,6 +107,55 @@ try {
             line-height: 1.6;
         }
 
+        /* Layout */
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+       
+        /* Main Content Area */
+        .admin-main {
+            flex: 1;
+            margin-left: 250px;
+            transition: margin-left 0.3s ease;
+            background-color: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .admin-sidebar.collapsed ~ .admin-main {
+            margin-left: 70px;
+        }
+
+        .main-header {
+            background: white;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            color: var(--dark);
+        }
+
+        .main-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--dark);
+        }
+
+        .main-content {
+            padding: 1.5rem;
+        }
+
+        /* Container */
         .container {
             width: 100%;
             max-width: 1200px;
@@ -114,73 +163,7 @@ try {
             padding: 0 15px;
         }
 
-        /* Header Styles */
-        .admin-header {
-            background: linear-gradient(135deg, var(--dark) 0%, var(--darker) 100%);
-            color: white;
-            padding: 1rem 0;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .admin-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo i {
-            color: var(--primary);
-        }
-
-        .admin-nav-links {
-            display: flex;
-            list-style: none;
-            gap: 1.5rem;
-        }
-
-        .admin-nav-links a {
-            color: white;
-            text-decoration: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 500;
-        }
-
-        .admin-nav-links a:hover,
-        .admin-nav-links a.active {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        /* Main Content */
-        main {
-            padding: 2rem 0;
-        }
-
+        /* Welcome Section */
         .welcome-section {
             margin-bottom: 2rem;
         }
@@ -382,39 +365,35 @@ try {
         }
 
         /* Responsive Design */
-        @media (max-width: 992px) {
-            .admin-nav-links {
-                gap: 1rem;
-            }
-        }
-
         @media (max-width: 768px) {
+            .admin-sidebar {
+                transform: translateX(-100%);
+                width: 250px;
+            }
+
+            .admin-sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+            .admin-sidebar.collapsed {
+                transform: translateX(-100%);
+            }
+
+            .admin-main {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .admin-sidebar.collapsed ~ .admin-main {
+                margin-left: 0;
+            }
+
             .mobile-menu-btn {
                 display: block;
             }
 
-            .admin-nav-links {
-                position: fixed;
-                top: 70px;
-                left: 0;
-                width: 100%;
-                background: var(--darker);
-                flex-direction: column;
-                padding: 1rem;
-                transform: translateY(-100%);
-                opacity: 0;
-                transition: var(--transition);
-                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-            }
-
-            .admin-nav-links.active {
-                transform: translateY(0);
-                opacity: 1;
-            }
-
-            .admin-nav-links a {
-                padding: 1rem;
-                justify-content: center;
+            .sidebar-toggle {
+                display: none;
             }
 
             .stats-grid {
@@ -427,6 +406,10 @@ try {
         }
 
         @media (max-width: 576px) {
+            .admin-sidebar {
+                width: 100%;
+            }
+
             .actions-grid {
                 grid-template-columns: 1fr;
             }
@@ -462,147 +445,173 @@ try {
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
-    <header class="admin-header">
-        <div class="container">
-            <nav class="admin-nav">
-                <div class="logo">
-                    <i class="fas fa-university"></i>
-                    <span>BankingKhonde Admin</span>
-                </div>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <?php include 'includes/sidebar.php'; ?>    
+
+        <!-- Main Content -->
+        <main class="admin-main" id="adminMain">
+            <header class="main-header">
                 <button class="mobile-menu-btn" id="mobileMenuBtn">
                     <i class="fas fa-bars"></i>
                 </button>
-                <ul class="admin-nav-links" id="navLinks">
-                    <li><a href="dashboard.php" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                    <li><a href="treasurers.php"><i class="fas fa-user-tie"></i> Treasurers</a></li>
-                    <li><a href="groups.php"><i class="fas fa-users"></i> Groups</a></li>
-                    <li><a href="settings.php"><i class="fas fa-cog"></i> Settings</a></li>
-                    <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
-
-    <main class="container">
-        <div class="welcome-section">
-            <h1>Admin Dashboard</h1>
-            <p>Welcome back, <?php echo htmlspecialchars($_SESSION['admin_username']); ?>!</p>
-        </div>
-
-        <!-- Statistics -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <i class="fas fa-users stat-icon"></i>
-                <span class="stat-number"><?php echo $stats['total_users']; ?></span>
-                <span class="stat-label">Total Users</span>
-            </div>
-            <div class="stat-card">
-                <i class="fas fa-user-tie stat-icon"></i>
-                <span class="stat-number"><?php echo $stats['total_treasurers']; ?></span>
-                <span class="stat-label">Treasurers</span>
-            </div>
-            <div class="stat-card">
-                <i class="fas fa-clock stat-icon"></i>
-                <span class="stat-number"><?php echo $stats['pending_verifications']; ?></span>
-                <span class="stat-label">Pending Verifications</span>
-            </div>
-            <div class="stat-card">
-                <i class="fas fa-layer-group stat-icon"></i>
-                <span class="stat-number"><?php echo $stats['total_groups']; ?></span>
-                <span class="stat-label">Active Groups</span>
-            </div>
-        </div>
-
-        <div class="content-grid">
-            <!-- Quick Actions -->
-            <div class="card">
-                <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
-                <div class="actions-grid">
-                    <a href="treasurers.php?filter=pending" class="action-btn">
-                        <i class="fas fa-clock"></i>
-                        <span>Review Pending Treasurers</span>
-                    </a>
-                    <a href="groups.php" class="action-btn">
-                        <i class="fas fa-users"></i>
-                        <span>Manage Groups</span>
-                    </a>
-                    <a href="treasurers.php" class="action-btn">
-                        <i class="fas fa-user-tie"></i>
-                        <span>Manage Treasurers</span>
-                    </a>
-                    <a href="settings.php" class="action-btn">
-                        <i class="fas fa-cog"></i>
-                        <span>System Settings</span>
-                    </a>
+                <h1>Admin Dashboard</h1>
+            </header>
+            
+            <div class="main-content">
+                <div class="welcome-section">
+                    <h1>Welcome to Dashboard</h1>
+                    <p>Welcome back, <?php echo htmlspecialchars($_SESSION['admin_username']); ?>!</p>
                 </div>
-            </div>
 
-            <!-- System Status -->
-            <div class="card">
-                <h3><i class="fas fa-server"></i> System Status</h3>
-                <div>
-                    <div class="status-item">
-                        <span>Database:</span>
-                        <span class="status-badge status-connected">Connected</span>
+                <!-- Statistics -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <i class="fas fa-users stat-icon"></i>
+                        <span class="stat-number"><?php echo $stats['total_users']; ?></span>
+                        <span class="stat-label">Total Users</span>
                     </div>
-                    <div class="status-item">
-                        <span>Users Online:</span>
-                        <span><?php echo $stats['total_users']; ?></span>
+                    <div class="stat-card">
+                        <i class="fas fa-user-tie stat-icon"></i>
+                        <span class="stat-number"><?php echo $stats['total_treasurers']; ?></span>
+                        <span class="stat-label">Treasurers</span>
                     </div>
-                    <div class="status-item">
-                        <span>Last Login:</span>
-                        <span><?php echo date('M j, g:i A'); ?></span>
+                    <div class="stat-card">
+                        <i class="fas fa-clock stat-icon"></i>
+                        <span class="stat-number"><?php echo $stats['pending_verifications']; ?></span>
+                        <span class="stat-label">Pending Verifications</span>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-layer-group stat-icon"></i>
+                        <span class="stat-number"><?php echo $stats['total_groups']; ?></span>
+                        <span class="stat-label">Active Groups</span>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Recent Activities -->
-        <div class="card">
-            <h3><i class="fas fa-history"></i> Recent System Activities</h3>
-            <?php if (empty($recent_activities)): ?>
-                <p>No recent activities to display.</p>
-            <?php else: ?>
-                <div class="activities-container">
-                    <?php foreach ($recent_activities as $activity): ?>
-                        <div class="activity-item">
-                            <div class="activity-type">
-                                <i class="fas fa-<?php 
-                                    switch($activity['type']) {
-                                        case 'user_registration': echo 'user-plus'; break;
-                                        case 'group_creation': echo 'users'; break;
-                                        case 'payment_processed': echo 'money-bill-wave'; break;
-                                        case 'system_update': echo 'sync-alt'; break;
-                                        default: echo 'bell';
-                                    }
-                                ?>"></i>
-                                <?php echo str_replace('_', ' ', $activity['type']); ?>
-                            </div>
-                            <div class="activity-description"><?php echo $activity['description']; ?></div>
-                            <small class="activity-date">
-                                <?php echo date('M j, Y g:i A', strtotime($activity['date'])); ?>
-                            </small>
+                <div class="content-grid">
+                    <!-- Quick Actions -->
+                    <div class="card">
+                        <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                        <div class="actions-grid">
+                            <a href="treasurers.php?filter=pending" class="action-btn">
+                                <i class="fas fa-clock"></i>
+                                <span>Review Pending Treasurers</span>
+                            </a>
+                            <a href="groups.php" class="action-btn">
+                                <i class="fas fa-users"></i>
+                                <span>Manage Groups</span>
+                            </a>
+                            <a href="treasurers.php" class="action-btn">
+                                <i class="fas fa-user-tie"></i>
+                                <span>Manage Treasurers</span>
+                            </a>
+                            <a href="settings.php" class="action-btn">
+                                <i class="fas fa-cog"></i>
+                                <span>System Settings</span>
+                            </a>
                         </div>
-                    <?php endforeach; ?>
+                    </div>
+
+                    <!-- System Status -->
+                    <div class="card">
+                        <h3><i class="fas fa-server"></i> System Status</h3>
+                        <div>
+                            <div class="status-item">
+                                <span>Database:</span>
+                                <span class="status-badge status-connected">Connected</span>
+                            </div>
+                            <div class="status-item">
+                                <span>Active Users:</span>
+                                <span><?php echo $stats['total_users']; ?></span>
+                            </div>
+                            <div class="status-item">
+                                <span>Last Login:</span>
+                                <span><?php echo date('M j, g:i A'); ?></span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            <?php endif; ?>
-        </div>
-    </main>
+
+                <!-- Recent Activities -->
+                <div class="card">
+                    <h3><i class="fas fa-history"></i> Recent System Activities</h3>
+                    <?php if (empty($recent_activities)): ?>
+                        <p>No recent activities to display.</p>
+                    <?php else: ?>
+                        <div class="activities-container">
+                            <?php foreach ($recent_activities as $activity): ?>
+                                <div class="activity-item">
+                                    <div class="activity-type">
+                                        <i class="fas fa-<?php 
+                                            switch($activity['type']) {
+                                                case 'user_registration': echo 'user-plus'; break;
+                                                case 'group_creation': echo 'users'; break;
+                                                case 'payment_processed': echo 'money-bill-wave'; break;
+                                                case 'system_update': echo 'sync-alt'; break;
+                                                default: echo 'bell';
+                                            }
+                                        ?>"></i>
+                                        <?php echo str_replace('_', ' ', $activity['type']); ?>
+                                    </div>
+                                    <div class="activity-description"><?php echo $activity['description']; ?></div>
+                                    <small class="activity-date">
+                                        <?php echo date('M j, Y g:i A', strtotime($activity['date'])); ?>
+                                    </small>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </main>
+    </div>
 
     <script>
-        // Mobile menu toggle
-        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
-            document.getElementById('navLinks').classList.toggle('active');
-        });
-
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', function(event) {
-            const navLinks = document.getElementById('navLinks');
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('adminSidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
             const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-            
-            if (!navLinks.contains(event.target) && !mobileMenuBtn.contains(event.target)) {
-                navLinks.classList.remove('active');
+            const adminMain = document.getElementById('adminMain');
+
+            // Toggle sidebar collapse/expand
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('collapsed');
+                    
+                    // Save state to localStorage
+                    const isCollapsed = sidebar.classList.contains('collapsed');
+                    localStorage.setItem('sidebarCollapsed', isCollapsed);
+                });
             }
+
+            // Toggle mobile menu
+            if (mobileMenuBtn) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    sidebar.classList.toggle('mobile-open');
+                });
+            }
+
+            // Close mobile menu when clicking on main content
+            if (adminMain) {
+                adminMain.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('mobile-open');
+                    }
+                });
+            }
+
+            // Load sidebar state from localStorage
+            const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (sidebarCollapsed) {
+                sidebar.classList.add('collapsed');
+            }
+
+            // Close mobile menu on window resize if it goes above mobile breakpoint
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    sidebar.classList.remove('mobile-open');
+                }
+            });
         });
     </script>
 </body>
