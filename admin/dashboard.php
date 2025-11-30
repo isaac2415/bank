@@ -459,6 +459,7 @@ try {
             background: var(--primary-dark);
         }
     </style>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
     <header class="admin-header">

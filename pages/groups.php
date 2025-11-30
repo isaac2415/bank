@@ -83,6 +83,15 @@ function createGroup($db)
         if ($check_stmt->fetch()) {
             throw new Exception("You already have a group with this name. Please choose a different name.");
         }
+        //check if the groups created by this member are less than or equal to 5
+        $count_query = "SELECT COUNT(*) as group_count FROM `groups` WHERE treasurer_id = ?";
+        $count_stmt = $db->prepare($count_query);
+        $count_stmt->execute([$treasurer_id]);
+        $group_count = $count_stmt->fetch(PDO::FETCH_ASSOC)['group_count'];
+        if ($group_count >= 5) {
+            throw new Exception("You have reached the maximum limit of 5 groups. Please contact support to create more groups.");
+        }
+        
 
         $query = "INSERT INTO `groups` (name, code, treasurer_id, meeting_frequency, meeting_days, contribution_amount, interest_rate, loan_repayment_days) 
           VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -155,7 +164,7 @@ function endGroup($db)
     $group_id = $_POST['group_id'];
     $user_id = $_SESSION['user_id'];
 
-    $query = "UPDATE groups SET status = 'ended' WHERE id = ? AND treasurer_id = ?";
+    $query = "UPDATE `groups` SET `status` = 'ended' WHERE id = ? AND `treasurer_id` = ?";
     $stmt = $db->prepare($query);
 
     if ($stmt->execute([$group_id, $user_id])) {
@@ -175,7 +184,7 @@ function restartGroup($db)
     $group_id = $_POST['group_id'];
     $user_id = $_SESSION['user_id'];
 
-    $query = "UPDATE groups SET status = 'active' WHERE id = ? AND treasurer_id = ?";
+    $query = "UPDATE `groups` SET `status` = 'active' WHERE `id` = ? AND `treasurer_id` = ?";
     $stmt = $db->prepare($query);
 
     if ($stmt->execute([$group_id, $user_id])) {
@@ -338,8 +347,9 @@ function shareProfits($db)
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Group Management - BankingKhonde</title>
+    <title>Group Management BankingKhonde</title>
     <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
      <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 

@@ -101,6 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BankingKhonde - Welcome</title>
     <link rel="stylesheet" href="assets/css/index.css">
@@ -115,6 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <ul class="nav-links">
                 <li><a href="#features">Features</a></li>
                 <li><a href="#auth">Login</a></li>
+                <li><a href="admin">Admin Portal</a></li>
             </ul>
         </nav>
     </header>

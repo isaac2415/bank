@@ -430,6 +430,7 @@ $groups = $stmt->fetchAll(PDO::FETCH_ASSOC);
             }
         }
     </style>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
     <?php include 'includes/header.php'; ?>

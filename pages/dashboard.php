@@ -142,6 +142,7 @@ $announcements = $stmt->fetchAll();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - BankingKhonde</title>
     <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>

@@ -496,10 +496,12 @@
                     Create Group
                 </a>
                 <?php endif; ?>
+                <?php if ($_SESSION['role'] === 'member'): ?>
                 <a href="groups.php?action=join">
                     <i class="fas fa-link"></i>
                     Join Group
                 </a>
+                <?php endif; ?> 
                 <a href="../logout.php">
                     <i class="fas fa-sign-out-alt"></i>
                     Logout

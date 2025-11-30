@@ -39,7 +39,7 @@ function getGroupOverview($db, $group_id) {
         // Basic group stats
         $query = "SELECT
                   (SELECT COUNT(DISTINCT gm2.user_id) FROM `group_members` gm2 WHERE gm2.group_id = ?) as total_members,
-                  (SELECT COUNT(*) FROM `meetings` m2 WHERE m2.group_id = ?) as total_meetings,
+                  (SELECT COUNT(*) FROM `meetings` m2 WHERE m2.group_id = ? AND m2.status = 'completed') as total_meetings,
                   (SELECT COALESCE(SUM(p.amount), 0) FROM `payments` p WHERE p.group_id = ? AND p.status = 'paid') +
                   (SELECT COALESCE(SUM(l.total_amount), 0) FROM `loans` l WHERE l.group_id = ? AND l.status = 'paid') as total_contributions,
                   (SELECT COUNT(*) FROM `loans` l2 WHERE l2.group_id = ?) as total_loans,
@@ -65,22 +65,52 @@ function getGroupOverview($db, $group_id) {
         $data['monthly_contributions'] = $stmt->fetchAll(PDO::FETCH_ASSOC) ?? [];
 
         // Member performance
-        $query = "SELECT
-                  u.full_name,
-                  COUNT(p.id) as total_meetings,
-                  SUM(CASE WHEN p.status = 'paid' THEN 1 ELSE 0 END) as meetings_paid,
-                  SUM(CASE WHEN p.status = 'paid' THEN p.amount ELSE 0 END) as total_paid,
-                  CASE
-                    WHEN COUNT(p.id) > 0 THEN
-                      (SUM(CASE WHEN p.status = 'paid' THEN 1 ELSE 0 END) * 100.0 / COUNT(p.id))
-                    ELSE 0
-                  END as attendance_rate
-                  FROM `group_members` gm
-                  JOIN `users` u ON gm.user_id = u.id
-                  LEFT JOIN `payments` p ON gm.user_id = p.user_id AND p.group_id = gm.group_id
-                  WHERE gm.group_id = ? AND gm.status = 'active'
-                  GROUP BY u.id, u.full_name
-                  ORDER BY attendance_rate DESC, total_paid DESC";
+$query = "SELECT
+    u.full_name,
+
+    COUNT(DISTINCT m.id) AS total_meetings,
+
+    SUM(
+        CASE 
+            WHEN p.status = 'paid' THEN 1 
+            ELSE 0 
+        END
+    ) AS meetings_paid,
+
+    SUM(
+        CASE 
+            WHEN p.status = 'paid' THEN p.amount 
+            ELSE 0 
+        END
+    ) AS total_paid,
+
+    CASE
+        WHEN COUNT(DISTINCT m.id) > 0 THEN
+            (SUM(CASE WHEN p.status = 'paid' THEN 1 ELSE 0 END) * 100.0 / COUNT(DISTINCT m.id))
+        ELSE 0
+    END AS attendance_rate
+
+FROM group_members gm
+JOIN users u 
+    ON gm.user_id = u.id
+
+LEFT JOIN meetings m
+    ON m.group_id = gm.group_id
+   AND m.status = 'completed'              -- only completed meetings
+
+LEFT JOIN payments p 
+    ON p.user_id = gm.user_id
+   AND p.group_id = gm.group_id
+   AND p.meeting_id = m.id
+   AND p.status != 'shared'                -- exclude 'shared' payments
+
+WHERE gm.group_id = ? 
+  AND gm.status = 'active'
+
+GROUP BY u.id, u.full_name
+ORDER BY attendance_rate DESC, total_paid DESC";
+
+
         $stmt = $db->prepare($query);
         $stmt->execute([$group_id]);
         $data['member_performance'] = $stmt->fetchAll(PDO::FETCH_ASSOC) ?? [];
@@ -204,6 +234,7 @@ try {
             color: #667eea;
         }
     </style>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
     <?php include '../includes/sidebar.php'; ?>
@@ -226,11 +257,12 @@ try {
                        class="btn <?php echo $report_type === 'loans' ? 'btn-primary' : 'btn-secondary'; ?>">
                         Loan Analysis
                     </a>
-                <?php endif; ?>
+                
                 <a href="reports.php?type=personal" 
                    class="btn <?php echo $report_type === 'personal' ? 'btn-primary' : 'btn-secondary'; ?>">
                     Personal Reports
                 </a>
+                <?php endif; ?>
             </div>
 
             <!-- Group Selector -->
