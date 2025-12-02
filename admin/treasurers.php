@@ -985,10 +985,7 @@ $stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
                                                     <form method="POST" style="display: inline;">
                                                         <input type="hidden" name="action" value="verify_treasurer">
                                                         <input type="hidden" name="user_id" value="<?php echo $treasurer['id']; ?>">
-                                                        <button type="submit" class="btn btn-success btn-sm" 
-                                                                onclick="return confirm('Verify <?php echo addslashes($treasurer['full_name']); ?> as treasurer? This will grant them access to manage groups and loans.')">
-                                                            <i class="fas fa-check"></i> Verify
-                                                        </button>
+
                                                     </form>
                                                     
                                                     <button type="button" class="btn btn-danger btn-sm" 

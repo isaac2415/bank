@@ -52,6 +52,23 @@ CREATE TABLE meetings (
     FOREIGN KEY (group_id) REFERENCES groups(id)
 );
 
+CREATE TABLE subscription (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    charge_id VARCHAR(50) NOT NULL,
+    ref_id VARCHAR(50) NOT NULL,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    currency VARCHAR(10) NOT NULL,
+    mobile VARCHAR(20) NOT NULL,
+    created_at DATETIME NOT NULL,
+    INDEX idx_charge_id (charge_id),
+    INDEX idx_email (email),
+    INDEX idx_status (status)
+);
+
 -- Payments table
 CREATE TABLE payments (
     id INT AUTO_INCREMENT PRIMARY KEY,

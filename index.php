@@ -27,10 +27,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     $action = $_POST['action'] ?? '';
     
-    if($_SESSION['error']){
-        echo "<script>alert('".$_SESSION['error']."');</script>";
-        unset($_SESSION['error']);
-    }
+    // if($_SESSION['error']){
+    //     echo "<script>alert('".$_SESSION['error']."');</script>";
+    //     unset($_SESSION['error']);
+    // }
     
     if ($action === 'register') {
         $username = $_POST['username'];
@@ -45,8 +45,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         if ($stmt->execute([$username, $email, $password, $full_name, $phone, $role])) {
             $_SESSION['success'] = "Registration successful! Please login.";
-            header("Location: index.php");
-            exit();
+            if($role === 'treasurer') {
+                header("Location: subscription.php");
+                $_SESSION['subcription_email'] = $email;
+                $_SESSION['subcription_name'] = $full_name;
+                
+            }else{
+                header("Location: index.php");
+            }
         }
     } elseif ($action === 'login') {
         $email = $_POST['email'];
@@ -60,12 +66,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($user && password_verify($password, $user['password'])) {
             
             if($user['role'] === 'treasurer') {
-                if($user['verified'] !== 'yes') {
-                    $_SESSION['error'] = "Your treasurer account is pending verification. Please wait for admin approval.";
-                    header("Location: index.php");
-                    exit();
-                } elseif($user['verified'] === 'rejected') {
-                    $_SESSION['error'] = "Your treasurer account verification was rejected. Please contact support.";
+                //check in subscription table if the email has paid the subscription fee
+                $sub_check_query = "SELECT * FROM subscription WHERE email = ?";
+                $sub_stmt = $db->prepare($sub_check_query);
+                $sub_stmt->execute([$email]);
+                $treasurerpaid = $sub_stmt->fetch(PDO::FETCH_ASSOC);
+                
+                //check if user is active
+                $active_query = 'SELECT is_active FROM users WHERE email = ?';
+                $active_stmt = $db->prepare($active_query);
+                $active_stmt->execute([$email]);
+                $is_active = $active_stmt->fetchColumn();
+                
+                
+                if(!$treasurerpaid && $is_active) {
+                    $_SESSION['error'] = "Your treasurer account subscription is not active. Please complete the subscription.";
                     header("Location: index.php");
                     exit();
                 }else{

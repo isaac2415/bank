@@ -145,6 +145,12 @@
                 </a>
             </li>
             <li>
+                <a href="subscriptions.php">
+                    <i class="fas fa-coins"></i>
+                    <span class="link-text">Subscriptions</span>
+                </a>
+            </li>
+            <li>
                 <a href="settings.php">
                     <i class="fas fa-cog"></i>
                     <span class="link-text">Settings</span>
