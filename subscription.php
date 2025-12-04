@@ -334,7 +334,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="container">
         <div class="header">
             <h1>Mobile Money Payment</h1>
-            <p>Complete your subscription payment securely</p>
+            <p>Pay 2000 per Year</p>
         </div>
         
         <div class="form-container">
@@ -427,7 +427,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                            required 
                            placeholder="Enter amount"
                            min="100"
-                           step="100">
+                           step="100"
+                           readonly>
                 </div>
                 
                 <div class="form-group">

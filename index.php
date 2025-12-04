@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $phone = $_POST['phone'];
         $role = $_POST['role'];
         
-        $query = "INSERT INTO `users` (`username`, `email`, `password`, `full_name`, `phone`, `role`) VALUES (?, ?, ?, ?, ?, ?)";
+        $query = "INSERT INTO `users` (`username`, `email`, `password`, `full_name`, `phone`, `role`, `verified`) VALUES (?, ?, ?, ?, ?, ?, 'yes')";
         $stmt = $db->prepare($query);
         
         if ($stmt->execute([$username, $email, $password, $full_name, $phone, $role])) {
@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             if($user['role'] === 'treasurer') {
                 //check in subscription table if the email has paid the subscription fee
-                $sub_check_query = "SELECT * FROM subscription WHERE email = ?";
+                $sub_check_query = "SELECT * FROM subscription WHERE email = ? AND amount >= 2000";
                 $sub_stmt = $db->prepare($sub_check_query);
                 $sub_stmt->execute([$email]);
                 $treasurerpaid = $sub_stmt->fetch(PDO::FETCH_ASSOC);
@@ -78,10 +78,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $active_stmt->execute([$email]);
                 $is_active = $active_stmt->fetchColumn();
                 
+                //update last login time
+                $last_login_query = "UPDATE users SET last_login = NOW() WHERE email = ?";
+                $last_login_stmt = $db->prepare($last_login_query);
+                $last_login_stmt->execute([$email]);
+                
                 
                 if(!$treasurerpaid && $is_active) {
                     $_SESSION['error'] = "Your treasurer account subscription is not active. Please complete the subscription.";
+                    $error = "Your treasurer account subscription is not active. Please complete the subscription.";
                     header("Location: index.php");
+                    //echo "<script> alert(1)</script>";
                     exit();
                 }else{
                     $_SESSION['user_id'] = $user['id'];

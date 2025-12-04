@@ -152,7 +152,7 @@ $treasurers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $statsQuery = "SELECT 
     COUNT(*) as total,
     SUM(CASE WHEN `verified` = NULL THEN 1 ELSE 0 END) as pending,
-    SUM(CASE WHEN `verified` = 'yes' THEN 1 ELSE 0 END) as verified,
+    SUM(CASE WHEN `is_active` = 1 THEN 1 ELSE 0 END) as verified,
     SUM(CASE WHEN `verified` = 'rejected' THEN 1 ELSE 0 END) as rejected
     FROM `users` 
     WHERE `role` = 'treasurer'";
@@ -829,7 +829,7 @@ $stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
                         </div>
                         <div class="stat-card verified">
                             <div class="stat-number"><?php echo $stats['verified']; ?></div>
-                            <div>Verified</div>
+                            <div>Active</div>
                         </div>
                         <div class="stat-card rejected">
                             <div class="stat-number"><?php echo $stats['rejected']; ?></div>
