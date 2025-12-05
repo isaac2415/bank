@@ -265,11 +265,12 @@ $announcements = $stmt->fetchAll();
                                     <span class="material-icons">add_circle</span>
                                     Create Your First Group
                                 </a>
-                            <?php endif; ?>
+                            <?php else: ?>
                             <a href="groups.php?action=join" class="btn btn-primary" style="text-decoration: none; align-items: center; display: flex; gap: 0.5rem;">
                                 <span class="material-icons">link</span>
                                 Join a Group
                             </a>
+                            <?php endif; ?>
                         </div>
                     </div>
                 <?php else: ?>

@@ -76,7 +76,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $active_query = 'SELECT is_active FROM users WHERE email = ?';
                 $active_stmt = $db->prepare($active_query);
                 $active_stmt->execute([$email]);
-                $is_active = $active_stmt->fetchColumn();
+                $is_active = (int) $active_stmt->fetchColumn();
+                
                 
                 //update last login time
                 $last_login_query = "UPDATE users SET last_login = NOW() WHERE email = ?";
@@ -84,10 +85,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $last_login_stmt->execute([$email]);
                 
                 
-                if(!$treasurerpaid && $is_active) {
-                    $_SESSION['error'] = "Your treasurer account subscription is not active. Please complete the subscription.";
+                if(!$treasurerpaid || $is_active === 0) {
+                    //$_SESSION['error'] = "Your treasurer account subscription is not active. Please complete the subscription.";
                     $error = "Your treasurer account subscription is not active. Please complete the subscription.";
-                    header("Location: index.php");
+                    header("Location: index.php#auth");
                     //echo "<script> alert(1)</script>";
                     exit();
                 }else{
