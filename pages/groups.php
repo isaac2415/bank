@@ -573,6 +573,7 @@ function shareProfits($db)
                                 <?php endif; ?>
                                 <a href="reports.php?group_id=<?php echo $group_id; ?>" class="btn btn-primary">View Reports</a>
                                 <a href="loans.php?group_id=<?php echo $group_id; ?>" class="btn btn-success">Manage Loans</a>
+                                <a href="members1.php?group_id=<?php echo $group_id; ?>" class="btn btn-primary">Manage Members</a>
                             </div>
                         <?php endif; ?>
                     </div>
