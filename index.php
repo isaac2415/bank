@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $maintenanceMode = $stmt->fetchColumn();
     
     if ($maintenanceMode === 'on') {
-        $_SESSION['error'] = "The system is currently under maintenance. Please try again later.";
+        $_SESSION['success'] = "The system is currently under maintenance. Please try again later.";
         header("Location: index.php");
         exit();
     }
@@ -39,6 +39,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $full_name = $_POST['full_name'];
         $phone = $_POST['phone'];
         $role = $_POST['role'];
+        
+        //check if email already exists
+        $checkQuery = "SELECT COUNT(*) FROM users WHERE email = ?";
+        $checkStmt = $db->prepare($checkQuery);
+        $checkStmt->execute([$email]);
+        $emailExists = $checkStmt->fetchColumn();
+        if ($emailExists) {
+            $error = "Email already registered. Please use a different email.";
+            $_SESSION['success'] = $error;
+            header("Location: index.php#auth");
+            exit();
+        }
+        
+        //check if username already exists
+        $checkQuery1 = "SELECT COUNT(*) FROM users WHERE username = ?";
+        $checkQuery1Stmt = $db->prepare($checkQuery1);
+        $checkQuery1Stmt->execute([$username]);
+        $usernameExists = $checkQuery1Stmt->fetchColumn();
+        if ($usernameExists) {
+            $error = "Username already taken. Please choose a different username.";
+            $_SESSION['success'] = $error;
+            header("Location: index.php#auth");
+            exit();
+        }
         
         $query = "INSERT INTO `users` (`username`, `email`, `password`, `full_name`, `phone`, `role`, `verified`) VALUES (?, ?, ?, ?, ?, ?, 'yes')";
         $stmt = $db->prepare($query);
@@ -86,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 
                 if(!$treasurerpaid || $is_active === 0) {
-                    //$_SESSION['error'] = "Your treasurer account subscription is not active. Please complete the subscription.";
+                    $_SESSION['success'] = "Your treasurer account subscription is not active. Please complete the subscription.";
                     $error = "Your treasurer account subscription is not active. Please complete the subscription.";
                     header("Location: index.php#auth");
                     //echo "<script> alert(1)</script>";
